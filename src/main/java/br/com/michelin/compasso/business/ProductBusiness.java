@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import br.com.michelin.compasso.dto.FilterDto;
@@ -20,26 +18,22 @@ public class ProductBusiness {
 	@Autowired
 	private ProductService service;
 	
-	public ResponseEntity<List<ProductEntity>> findAll() {
-		return ResponseEntity.ok(this.service.findAll());
+	public List<ProductEntity> findAll() {
+		return this.service.findAll();
 	}
 	
-	public ResponseEntity<ProductEntity> getOne(String id) {
-		Optional<ProductEntity> optionalProduct = this.service.findById(id);
-		if (optionalProduct.isPresent())
-			return ResponseEntity.ok(optionalProduct.get()); 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	public Optional<ProductEntity> getOne(String id) {
+		return this.service.findById(id);
 	}
 	
-	public ResponseEntity<List<ProductEntity>> search(Optional<BigDecimal> minPrice, Optional<BigDecimal> maxPrice,
+	public List<ProductEntity> search(Optional<BigDecimal> minPrice, Optional<BigDecimal> maxPrice,
 			String q) {
-		return ResponseEntity.ok(this.service.search(new FilterDto(minPrice, maxPrice, q)));
+		return this.service.search(new FilterDto(minPrice, maxPrice, q));
 	}
 
-	public ResponseEntity<ProductEntity> applyRulesToSave(Optional<ProductEntity> entity) {
+	public ProductEntity applyRulesToSave(Optional<ProductEntity> entity) {
 		ProductValidator.execute(entity);
-		ProductEntity saved = this.service.save(entity.get());
-		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+		return this.service.save(entity.get());
 	}
 
 	public ProductEntity applyRulesToUpdate(String id, Optional<ProductEntity> entity) {

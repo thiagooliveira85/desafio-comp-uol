@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,22 +22,26 @@ public class ProductController implements CrudTemplateController<ProductEntity> 
 	
 	@Override
 	public ResponseEntity<ProductEntity> create(Optional<ProductEntity> entity) {
-		return this.business.applyRulesToSave(entity);
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(this.business.applyRulesToSave(entity));
 	}
 	
 	@Override
 	public ResponseEntity<List<ProductEntity>> getAll() {
-		return this.business.findAll();
+		return ResponseEntity.ok(this.business.findAll());
 	}
 	
 	@Override
 	public ResponseEntity<ProductEntity> getOne(String id) {
-		return this.business.getOne(id);
+		Optional<ProductEntity> optionalProduct = this.business.getOne(id);
+		if (optionalProduct.isPresent())
+			return ResponseEntity.ok(optionalProduct.get()); 
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
 	@Override
 	public ResponseEntity<List<ProductEntity>> search(Optional<BigDecimal> minPrice, Optional<BigDecimal> maxPrice, String q) {
-		return this.business.search(minPrice, maxPrice, q);
+		return ResponseEntity.ok(this.business.search(minPrice, maxPrice, q));
 	}
 
 	@Override
